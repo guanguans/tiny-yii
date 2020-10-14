@@ -78,7 +78,7 @@ abstract class Request extends Component
      */
     public function setScriptFile($value)
     {
-        $scriptFile = realpath(Yii::getAlias($value));
+        $scriptFile = realpath($value);
         if ($scriptFile !== false && is_file($scriptFile)) {
             $this->_scriptFile = $scriptFile;
         } else {

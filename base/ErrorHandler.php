@@ -134,7 +134,7 @@ abstract class ErrorHandler extends Component
             }
             $this->renderException($exception);
             if (!$this->silentExitOnException) {
-                \Yii::getLogger()->flush(true);
+                // \Yii::getLogger()->flush(true);
                 if (defined('HHVM_VERSION')) {
                     flush();
                 }
@@ -315,7 +315,7 @@ abstract class ErrorHandler extends Component
         } elseif ($exception instanceof \ErrorException) {
             $category .= ':' . $exception->getSeverity();
         }
-        Yii::error($exception, $category);
+        // Yii::error($exception, $category);
     }
 
     /**

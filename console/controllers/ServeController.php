@@ -51,7 +51,8 @@ class ServeController extends Controller
      */
     public function actionIndex($address = 'localhost')
     {
-        $documentRoot = Yii::getAlias($this->docroot);
+        // $documentRoot = Yii::getAlias($this->docroot);
+        $documentRoot = __DIR__;
 
         if (strpos($address, ':') === false) {
             $address = $address . ':' . $this->port;

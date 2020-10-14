@@ -15,5 +15,7 @@ $config = [
 ];
 
 $application = new yii\console\Application($config);
-var_dump($application);
-var_dump(Yii::$app);
+// var_dump($application);
+// var_dump(Yii::$app);
+$exitCode = $application->run();
+exit($exitCode);

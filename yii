@@ -11,8 +11,8 @@
 defined('YII_DEBUG') or define('YII_DEBUG', true);
 
 $composerAutoload = [
-    __DIR__ . '/../vendor/autoload.php', // in yii2-dev repo
-    __DIR__ . '/../../autoload.php', // installed as a composer binary
+    __DIR__ . '/vendor/autoload.php', // in yii2-dev repo
+    __DIR__ . '/../autoload.php', // installed as a composer binary
 ];
 $vendorPath = null;
 foreach ($composerAutoload as $autoload) {
@@ -31,8 +31,5 @@ $application = new yii\console\Application([
     'basePath' => __DIR__ . '/console',
     'controllerNamespace' => 'yii\console\controllers',
 ]);
-if ($vendorPath !== null) {
-    $application->setVendorPath($vendorPath);
-}
 $exitCode = $application->run();
 exit($exitCode);
