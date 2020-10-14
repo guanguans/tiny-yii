@@ -14,9 +14,6 @@ $config = [
     'params'     => [],
 ];
 
-$web     = new yii\web\Application($config);
-$console = new yii\console\Application($config);
-
-var_dump($web);
-var_dump($console);
+$application = new yii\console\Application($config);
+var_dump($application);
 var_dump(Yii::$app);
