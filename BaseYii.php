@@ -7,11 +7,9 @@
 
 namespace yii;
 
-use yii\base\InvalidArgumentException;
 use yii\base\InvalidConfigException;
-use yii\base\UnknownClassException;
 use yii\di\Container;
-use yii\log\Logger;
+use yii\base\InvalidArgumentException;
 
 /**
  * Gets the application start timestamp.
@@ -67,6 +65,7 @@ class BaseYii
      * @see autoload()
      */
     public static $classMap = [];
+
     /**
      * @var \yii\console\Application|\yii\web\Application the application instance
      */
@@ -85,7 +84,6 @@ class BaseYii
      * @see Container
      */
     public static $container;
-
 
     /**
      * Returns a string representing the current version of the Yii framework.
@@ -152,33 +150,6 @@ class BaseYii
 
         if ($throwException) {
             throw new InvalidArgumentException("Invalid path alias: $alias");
-        }
-
-        return false;
-    }
-
-    /**
-     * Returns the root alias part of a given alias.
-     * A root alias is an alias that has been registered via [[setAlias()]] previously.
-     * If a given alias matches multiple root aliases, the longest one will be returned.
-     * @param string $alias the alias
-     * @return string|bool the root alias, or false if no root alias is found
-     */
-    public static function getRootAlias($alias)
-    {
-        $pos = strpos($alias, '/');
-        $root = $pos === false ? $alias : substr($alias, 0, $pos);
-
-        if (isset(static::$aliases[$root])) {
-            if (is_string(static::$aliases[$root])) {
-                return $root;
-            }
-
-            foreach (static::$aliases[$root] as $name => $path) {
-                if (strpos($alias . '/', $name . '/') === 0) {
-                    return $name;
-                }
-            }
         }
 
         return false;
@@ -252,52 +223,6 @@ class BaseYii
     }
 
     /**
-     * Class autoload loader.
-     *
-     * This method is invoked automatically when PHP sees an unknown class.
-     * The method will attempt to include the class file according to the following procedure:
-     *
-     * 1. Search in [[classMap]];
-     * 2. If the class is namespaced (e.g. `yii\base\Component`), it will attempt
-     *    to include the file associated with the corresponding path alias
-     *    (e.g. `@yii/base/Component.php`);
-     *
-     * This autoloader allows loading classes that follow the [PSR-4 standard](http://www.php-fig.org/psr/psr-4/)
-     * and have its top-level namespace or sub-namespaces defined as path aliases.
-     *
-     * Example: When aliases `@yii` and `@yii/bootstrap` are defined, classes in the `yii\bootstrap` namespace
-     * will be loaded using the `@yii/bootstrap` alias which points to the directory where bootstrap extension
-     * files are installed and all classes from other `yii` namespaces will be loaded from the yii framework directory.
-     *
-     * Also the [guide section on autoloading](guide:concept-autoloading).
-     *
-     * @param string $className the fully qualified class name without a leading backslash "\"
-     * @throws UnknownClassException if the class does not exist in the class file
-     */
-    public static function autoload($className)
-    {
-        if (isset(static::$classMap[$className])) {
-            $classFile = static::$classMap[$className];
-            if ($classFile[0] === '@') {
-                $classFile = static::getAlias($classFile);
-            }
-        } elseif (strpos($className, '\\') !== false) {
-            $classFile = static::getAlias('@' . str_replace('\\', '/', $className) . '.php', false);
-            if ($classFile === false || !is_file($classFile)) {
-                return;
-            }
-        } else {
-            return;
-        }
-
-        include $classFile;
-
-        if (YII_DEBUG && !class_exists($className, false) && !interface_exists($className, false) && !trait_exists($className, false)) {
-            throw new UnknownClassException("Unable to find '$className' in file: $classFile. Namespace missing?");
-        }
-    }
-
-    /**
      * Creates a new object using the given configuration.
      *
      * You may view this method as an enhanced version of the `new` operator.
@@ -366,184 +291,6 @@ class BaseYii
         }
 
         throw new InvalidConfigException('Object configuration must be an array containing a "class" or "__class" element.');
-    }
-
-    private static $_logger;
-
-    /**
-     * @return Logger message logger
-     */
-    public static function getLogger()
-    {
-        if (self::$_logger !== null) {
-            return self::$_logger;
-        }
-
-        return self::$_logger = static::createObject('yii\log\Logger');
-    }
-
-    /**
-     * Sets the logger object.
-     * @param Logger $logger the logger object.
-     */
-    public static function setLogger($logger)
-    {
-        self::$_logger = $logger;
-    }
-
-    /**
-     * Logs a debug message.
-     * Trace messages are logged mainly for development purpose to see
-     * the execution work flow of some code. This method will only log
-     * a message when the application is in debug mode.
-     * @param string|array $message the message to be logged. This can be a simple string or a more
-     * complex data structure, such as array.
-     * @param string $category the category of the message.
-     * @since 2.0.14
-     */
-    public static function debug($message, $category = 'application')
-    {
-        if (YII_DEBUG) {
-            static::getLogger()->log($message, Logger::LEVEL_TRACE, $category);
-        }
-    }
-
-    /**
-     * Alias of [[debug()]].
-     * @param string|array $message the message to be logged. This can be a simple string or a more
-     * complex data structure, such as array.
-     * @param string $category the category of the message.
-     * @deprecated since 2.0.14. Use [[debug()]] instead.
-     */
-    public static function trace($message, $category = 'application')
-    {
-        static::debug($message, $category);
-    }
-
-    /**
-     * Logs an error message.
-     * An error message is typically logged when an unrecoverable error occurs
-     * during the execution of an application.
-     * @param string|array $message the message to be logged. This can be a simple string or a more
-     * complex data structure, such as array.
-     * @param string $category the category of the message.
-     */
-    public static function error($message, $category = 'application')
-    {
-        static::getLogger()->log($message, Logger::LEVEL_ERROR, $category);
-    }
-
-    /**
-     * Logs a warning message.
-     * A warning message is typically logged when an error occurs while the execution
-     * can still continue.
-     * @param string|array $message the message to be logged. This can be a simple string or a more
-     * complex data structure, such as array.
-     * @param string $category the category of the message.
-     */
-    public static function warning($message, $category = 'application')
-    {
-        static::getLogger()->log($message, Logger::LEVEL_WARNING, $category);
-    }
-
-    /**
-     * Logs an informative message.
-     * An informative message is typically logged by an application to keep record of
-     * something important (e.g. an administrator logs in).
-     * @param string|array $message the message to be logged. This can be a simple string or a more
-     * complex data structure, such as array.
-     * @param string $category the category of the message.
-     */
-    public static function info($message, $category = 'application')
-    {
-        static::getLogger()->log($message, Logger::LEVEL_INFO, $category);
-    }
-
-    /**
-     * Marks the beginning of a code block for profiling.
-     *
-     * This has to be matched with a call to [[endProfile]] with the same category name.
-     * The begin- and end- calls must also be properly nested. For example,
-     *
-     * ```php
-     * \Yii::beginProfile('block1');
-     * // some code to be profiled
-     *     \Yii::beginProfile('block2');
-     *     // some other code to be profiled
-     *     \Yii::endProfile('block2');
-     * \Yii::endProfile('block1');
-     * ```
-     * @param string $token token for the code block
-     * @param string $category the category of this log message
-     * @see endProfile()
-     */
-    public static function beginProfile($token, $category = 'application')
-    {
-        static::getLogger()->log($token, Logger::LEVEL_PROFILE_BEGIN, $category);
-    }
-
-    /**
-     * Marks the end of a code block for profiling.
-     * This has to be matched with a previous call to [[beginProfile]] with the same category name.
-     * @param string $token token for the code block
-     * @param string $category the category of this log message
-     * @see beginProfile()
-     */
-    public static function endProfile($token, $category = 'application')
-    {
-        static::getLogger()->log($token, Logger::LEVEL_PROFILE_END, $category);
-    }
-
-    /**
-     * Returns an HTML hyperlink that can be displayed on your Web page showing "Powered by Yii Framework" information.
-     * @return string an HTML hyperlink that can be displayed on your Web page showing "Powered by Yii Framework" information
-     * @deprecated since 2.0.14, this method will be removed in 2.1.0.
-     */
-    public static function powered()
-    {
-        return \Yii::t('yii', 'Powered by {yii}', [
-            'yii' => '<a href="http://www.yiiframework.com/" rel="external">' . \Yii::t('yii',
-                    'Yii Framework') . '</a>',
-        ]);
-    }
-
-    /**
-     * Translates a message to the specified language.
-     *
-     * This is a shortcut method of [[\yii\i18n\I18N::translate()]].
-     *
-     * The translation will be conducted according to the message category and the target language will be used.
-     *
-     * You can add parameters to a translation message that will be substituted with the corresponding value after
-     * translation. The format for this is to use curly brackets around the parameter name as you can see in the following example:
-     *
-     * ```php
-     * $username = 'Alexander';
-     * echo \Yii::t('app', 'Hello, {username}!', ['username' => $username]);
-     * ```
-     *
-     * Further formatting of message parameters is supported using the [PHP intl extensions](https://secure.php.net/manual/en/intro.intl.php)
-     * message formatter. See [[\yii\i18n\I18N::translate()]] for more details.
-     *
-     * @param string $category the message category.
-     * @param string $message the message to be translated.
-     * @param array $params the parameters that will be used to replace the corresponding placeholders in the message.
-     * @param string $language the language code (e.g. `en-US`, `en`). If this is null, the current
-     * [[\yii\base\Application::language|application language]] will be used.
-     * @return string the translated message.
-     */
-    public static function t($category, $message, $params = [], $language = null)
-    {
-        if (static::$app !== null) {
-            return static::$app->getI18n()->translate($category, $message, $params, $language ?: static::$app->language);
-        }
-
-        $placeholders = [];
-        foreach ((array) $params as $name => $value) {
-            $placeholders['{' . $name . '}'] = $value;
-        }
-
-        return ($placeholders === []) ? $message : strtr($message, $placeholders);
     }
 
     /**
