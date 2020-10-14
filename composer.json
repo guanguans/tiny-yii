@@ -66,8 +66,7 @@
         "php": ">=5.4.0",
         "ext-mbstring": "*",
         "ext-ctype": "*",
-        "lib-pcre": "*",
-        "yiisoft/yii2-composer": "~2.0.4"
+        "lib-pcre": "*"
     },
     "autoload": {
         "psr-4": {"yii\\": ""}
