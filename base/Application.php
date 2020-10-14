@@ -226,21 +226,6 @@ abstract class Application extends Module
             throw new InvalidConfigException('The "basePath" configuration for the Application is required.');
         }
 
-        if (isset($config['vendorPath'])) {
-            $this->setVendorPath($config['vendorPath']);
-            unset($config['vendorPath']);
-        } else {
-            // set "@vendor"
-            $this->getVendorPath();
-        }
-        if (isset($config['runtimePath'])) {
-            $this->setRuntimePath($config['runtimePath']);
-            unset($config['runtimePath']);
-        } else {
-            // set "@runtime"
-            $this->getRuntimePath();
-        }
-
         if (isset($config['timeZone'])) {
             $this->setTimeZone($config['timeZone']);
             unset($config['timeZone']);
@@ -280,31 +265,9 @@ abstract class Application extends Module
      */
     protected function bootstrap()
     {
-        if ($this->extensions === null) {
-            $file = Yii::getAlias('@vendor/yiisoft/extensions.php');
-            $this->extensions = is_file($file) ? include $file : [];
-        }
-        foreach ($this->extensions as $extension) {
-            if (!empty($extension['alias'])) {
-                foreach ($extension['alias'] as $name => $path) {
-                    Yii::setAlias($name, $path);
-                }
-            }
-            if (isset($extension['bootstrap'])) {
-                $component = Yii::createObject($extension['bootstrap']);
-                if ($component instanceof BootstrapInterface) {
-                    Yii::debug('Bootstrap with ' . get_class($component) . '::bootstrap()', __METHOD__);
-                    $component->bootstrap($this);
-                } else {
-                    Yii::debug('Bootstrap with ' . get_class($component), __METHOD__);
-                }
-            }
-        }
-
         foreach ($this->bootstrap as $mixed) {
             $component = null;
             if ($mixed instanceof \Closure) {
-                Yii::debug('Bootstrap with Closure', __METHOD__);
                 if (!$component = call_user_func($mixed, $this)) {
                     continue;
                 }
@@ -323,10 +286,9 @@ abstract class Application extends Module
             }
 
             if ($component instanceof BootstrapInterface) {
-                Yii::debug('Bootstrap with ' . get_class($component) . '::bootstrap()', __METHOD__);
                 $component->bootstrap($this);
             } else {
-                Yii::debug('Bootstrap with ' . get_class($component), __METHOD__);
+                // Yii::debug('Bootstrap with ' . get_class($component), __METHOD__);
             }
         }
     }
@@ -368,7 +330,7 @@ abstract class Application extends Module
     public function setBasePath($path)
     {
         parent::setBasePath($path);
-        Yii::setAlias('@app', $this->getBasePath());
+        // Yii::setAlias('@app', $this->getBasePath());
     }
 
     /**
@@ -410,60 +372,6 @@ abstract class Application extends Module
      * @return Response the resulting response
      */
     abstract public function handleRequest($request);
-
-    private $_runtimePath;
-
-    /**
-     * Returns the directory that stores runtime files.
-     * @return string the directory that stores runtime files.
-     * Defaults to the "runtime" subdirectory under [[basePath]].
-     */
-    public function getRuntimePath()
-    {
-        if ($this->_runtimePath === null) {
-            $this->setRuntimePath($this->getBasePath() . DIRECTORY_SEPARATOR . 'runtime');
-        }
-
-        return $this->_runtimePath;
-    }
-
-    /**
-     * Sets the directory that stores runtime files.
-     * @param string $path the directory that stores runtime files.
-     */
-    public function setRuntimePath($path)
-    {
-        $this->_runtimePath = Yii::getAlias($path);
-        Yii::setAlias('@runtime', $this->_runtimePath);
-    }
-
-    private $_vendorPath;
-
-    /**
-     * Returns the directory that stores vendor files.
-     * @return string the directory that stores vendor files.
-     * Defaults to "vendor" directory under [[basePath]].
-     */
-    public function getVendorPath()
-    {
-        if ($this->_vendorPath === null) {
-            $this->setVendorPath($this->getBasePath() . DIRECTORY_SEPARATOR . 'vendor');
-        }
-
-        return $this->_vendorPath;
-    }
-
-    /**
-     * Sets the directory that stores vendor files.
-     * @param string $path the directory that stores vendor files.
-     */
-    public function setVendorPath($path)
-    {
-        $this->_vendorPath = Yii::getAlias($path);
-        Yii::setAlias('@vendor', $this->_vendorPath);
-        Yii::setAlias('@bower', $this->_vendorPath . DIRECTORY_SEPARATOR . 'bower');
-        Yii::setAlias('@npm', $this->_vendorPath . DIRECTORY_SEPARATOR . 'npm');
-    }
 
     /**
      * Returns the time zone used by this application.

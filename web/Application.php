@@ -63,8 +63,6 @@ class Application extends \yii\base\Application
     protected function bootstrap()
     {
         $request = $this->getRequest();
-        Yii::setAlias('@webroot', dirname($request->getScriptFile()));
-        Yii::setAlias('@web', $request->getBaseUrl());
 
         parent::bootstrap();
     }
