@@ -5,7 +5,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\helpers;
+namespace yii\base;
 
 use Yii;
 
@@ -18,7 +18,7 @@ use Yii;
  * @author Alex Makarov <sam@rmcreative.ru>
  * @since 2.0
  */
-class BaseStringHelper
+class StringHelper
 {
     /**
      * Returns the number of bytes in the given string.
