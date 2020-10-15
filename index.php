@@ -8,7 +8,13 @@ require __DIR__.'/Yii.php';
 $config = [
     'id'         => 'yii2-basic-console',
     'bootstrap'  => [],
-    'components' => [],
+    'components' => [
+        'pay' => [
+            'class' => 'yii\console\Pay',
+            'wechat' => 'This is Wechat.',
+            'alipay' => 'This is Alipay.',
+        ]
+    ],
     'modules'    => [],
 ];
 
