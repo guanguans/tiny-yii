@@ -8,18 +8,14 @@
 namespace yii\base;
 
 use Yii;
+use yii\di\ServiceLocator;
 
-abstract class Application extends Module
+abstract class Application extends ServiceLocator
 {
     /**
      * @var string the application name.
      */
     public $name = 'My Application';
-
-    /**
-     * @var array list of loaded modules indexed by their class names.
-     */
-    public $loadedModules = [];
 
     /**
      * Constructor.
@@ -30,7 +26,6 @@ abstract class Application extends Module
     public function __construct($config = [])
     {
         Yii::$app = $this;
-        static::setInstance($this);
 
         $this->preInit($config);
 
@@ -47,10 +42,6 @@ abstract class Application extends Module
      */
     public function preInit(&$config)
     {
-        if (!isset($config['id'])) {
-            throw new InvalidConfigException('The "id" configuration for the Application is required.');
-        }
-
         if (isset($config['container'])) {
             $this->setContainer($config['container']);
 
