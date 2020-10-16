@@ -17,11 +17,13 @@ $config = [
 ];
 
 $application = new yii\console\Application($config);
+
 var_dump(new yii\console\Pay([
     'wechat' => 'This is Wechat.',
     'alipay' => 'This is Alipay.',
 ]));
 var_dump($application->get('pay'));
+var_dump($application->getComponents());
 // var_dump($application);
 // var_dump(Yii::$container);
 // var_dump(Yii::$app);
