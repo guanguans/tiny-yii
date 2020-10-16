@@ -76,6 +76,6 @@ class Application extends ServiceLocator
      */
     public function setContainer($config)
     {
-        Yii::configure(Yii::$container, $config);
+        Component::configure(Yii::$container, $config);
     }
 }

@@ -6,9 +6,9 @@ use yii\base\Component;
 
 class Pay extends Component
 {
-    public $wechat;
+    private $wechat;
 
-    public $alipay;
+    private $alipay;
 
     public function init()
     {
