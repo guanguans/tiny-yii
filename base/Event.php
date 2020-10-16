@@ -7,22 +7,18 @@
 
 namespace yii\base;
 
-use yii\base\StringHelper;
+use yii\helpers\StringHelper;
 
 /**
  * Event is the base class for all event classes.
- *
  * It encapsulates the parameters associated with an event.
  * The [[sender]] property describes who raises the event.
  * And the [[handled]] property indicates if the event is handled.
  * If an event handler sets [[handled]] to be `true`, the rest of the
  * uninvoked handlers will no longer be called to handle the event.
- *
  * Additionally, when attaching an event handler, extra data may be passed
  * and be available via the [[data]] property when the event handler is invoked.
- *
  * For more details and usage information on Event, see the [guide article on events](guide:concept-events).
- *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */

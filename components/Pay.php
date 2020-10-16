@@ -1,6 +1,6 @@
 <?php
 
-namespace yii\console;
+namespace yii\components;
 
 use yii\base\Component;
 

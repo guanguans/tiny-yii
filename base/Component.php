@@ -8,7 +8,7 @@
 namespace yii\base;
 
 use Yii;
-use yii\base\StringHelper;
+use yii\helpers\StringHelper;
 
 /**
  * Component is the base class that implements the *property*, *event* and *behavior* features.

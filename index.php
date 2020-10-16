@@ -6,19 +6,18 @@ require __DIR__.'/vendor/autoload.php';
 require __DIR__.'/Yii.php';
 
 $config = [
-    // 'id'         => 'yii2-basic-console',
     'components' => [
         'pay' => [
-            'class'  => 'yii\console\Pay',
+            'class'  => 'yii\components\Pay',
             'wechat' => 'This is Wechat.',
             'alipay' => 'This is Alipay.',
         ],
     ],
 ];
 
-$application = new yii\console\Application($config);
+$application = new yii\base\Application($config);
 
-var_dump(new yii\console\Pay([
+var_dump(new yii\components\Pay([
     'wechat' => 'This is Wechat.',
     'alipay' => 'This is Alipay.',
 ]));

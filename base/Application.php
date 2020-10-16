@@ -10,7 +10,7 @@ namespace yii\base;
 use Yii;
 use yii\di\ServiceLocator;
 
-abstract class Application extends ServiceLocator
+class Application extends ServiceLocator
 {
     /**
      * @var string the application name.
@@ -26,6 +26,8 @@ abstract class Application extends ServiceLocator
     public function __construct($config = [])
     {
         Yii::$app = $this;
+
+        Yii::$container = new \yii\di\Container();
 
         $this->preInit($config);
 
