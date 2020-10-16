@@ -12,68 +12,10 @@ use Yii;
 abstract class Application extends Module
 {
     /**
-     * @event Event an event raised before the application starts to handle a request.
-     */
-    const EVENT_BEFORE_REQUEST = 'beforeRequest';
-    /**
-     * @event Event an event raised after the application successfully handles a request (before the response is sent out).
-     */
-    const EVENT_AFTER_REQUEST = 'afterRequest';
-    /**
-     * Application state used by [[state]]: application just started.
-     */
-    const STATE_BEGIN = 0;
-    /**
-     * Application state used by [[state]]: application is initializing.
-     */
-    const STATE_INIT = 1;
-    /**
-     * Application state used by [[state]]: application is triggering [[EVENT_BEFORE_REQUEST]].
-     */
-    const STATE_BEFORE_REQUEST = 2;
-    /**
-     * Application state used by [[state]]: application is handling the request.
-     */
-    const STATE_HANDLING_REQUEST = 3;
-    /**
-     * Application state used by [[state]]: application is triggering [[EVENT_AFTER_REQUEST]]..
-     */
-    const STATE_AFTER_REQUEST = 4;
-    /**
-     * Application state used by [[state]]: application is about to send response.
-     */
-    const STATE_SENDING_RESPONSE = 5;
-    /**
-     * Application state used by [[state]]: application has ended.
-     */
-    const STATE_END = 6;
-
-    /**
      * @var string the application name.
      */
     public $name = 'My Application';
 
-    /**
-     * @var array list of components that should be run during the application [[bootstrap()|bootstrapping process]].
-     *
-     * Each component may be specified in one of the following formats:
-     *
-     * - an application component ID as specified via [[components]].
-     * - a module ID as specified via [[modules]].
-     * - a class name.
-     * - a configuration array.
-     * - a Closure
-     *
-     * During the bootstrapping process, each component will be instantiated. If the component class
-     * implements [[BootstrapInterface]], its [[BootstrapInterface::bootstrap()|bootstrap()]] method
-     * will be also be called.
-     */
-    public $bootstrap = [];
-    /**
-     * @var int the current application state during a request handling life cycle.
-     * This property is managed by the application. Do not modify this property.
-     */
-    public $state;
     /**
      * @var array list of loaded modules indexed by their class names.
      */
@@ -89,8 +31,6 @@ abstract class Application extends Module
     {
         Yii::$app = $this;
         static::setInstance($this);
-
-        $this->state = self::STATE_BEGIN;
 
         $this->preInit($config);
 
@@ -123,7 +63,6 @@ abstract class Application extends Module
      */
     public function init()
     {
-        $this->state = self::STATE_INIT;
         $this->bootstrap();
     }
 
@@ -134,59 +73,6 @@ abstract class Application extends Module
      */
     protected function bootstrap()
     {
-        foreach ($this->bootstrap as $mixed) {
-            $component = null;
-            if ($mixed instanceof \Closure) {
-                if (!$component = call_user_func($mixed, $this)) {
-                    continue;
-                }
-            } elseif (is_string($mixed)) {
-                if ($this->has($mixed)) {
-                    $component = $this->get($mixed);
-                } elseif ($this->hasModule($mixed)) {
-                    $component = $this->getModule($mixed);
-                } elseif (strpos($mixed, '\\') === false) {
-                    throw new InvalidConfigException("Unknown bootstrapping component ID: $mixed");
-                }
-            }
-
-            if (!isset($component)) {
-                $component = Yii::createObject($mixed);
-            }
-
-            if ($component instanceof BootstrapInterface) {
-                $component->bootstrap($this);
-            }
-        }
-    }
-
-    /**
-     * Runs the application.
-     * This is the main entrance of an application.
-     * @return int the exit status (0 means normal, non-zero values mean abnormal)
-     */
-    public function run()
-    {
-        try {
-            $this->state = self::STATE_BEFORE_REQUEST;
-            $this->trigger(self::EVENT_BEFORE_REQUEST);
-
-            $this->state = self::STATE_HANDLING_REQUEST;
-            // $response = $this->handleRequest($this->getRequest());
-
-            $this->state = self::STATE_AFTER_REQUEST;
-            $this->trigger(self::EVENT_AFTER_REQUEST);
-
-            $this->state = self::STATE_SENDING_RESPONSE;
-            // $response->send();
-
-            $this->state = self::STATE_END;
-
-            // return $response->exitStatus;
-        } catch (ExitException $e) {
-            // $this->end($e->statusCode, isset($response) ? $response : null);
-            return $e->statusCode;
-        }
     }
 
     /**
