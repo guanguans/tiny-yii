@@ -5,12 +5,31 @@ define('YII_DEBUG', true);
 require __DIR__.'/vendor/autoload.php';
 require __DIR__.'/Yii.php';
 
+class Pay extends \yii\base\Component
+{
+    private $wechat;
+
+    public function init()
+    {
+        parent::init();
+    }
+
+    public function getWechat()
+    {
+        return $this->wechat;
+    }
+
+    public function setWechat($wechat)
+    {
+        $this->wechat = $wechat;
+    }
+}
+
 $config = [
     'components' => [
         'pay' => [
-            'class'  => 'yii\components\Pay',
+            'class'  => Pay::className(),
             'wechat' => 'This is Wechat.',
-            'alipay' => 'This is Alipay.',
         ],
     ],
 ];
@@ -18,19 +37,18 @@ $config = [
 $application = new yii\base\Application($config);
 
 var_dump($application);
-echo '-------------------------------------------------------------------------'.PHP_EOL;
+printf('-------------------------------------------------------------------------');
 
 var_dump($application->get('pay'));
-echo '-------------------------------------------------------------------------'.PHP_EOL;
+printf('-------------------------------------------------------------------------');
 
 var_dump(Yii::$container);
-echo '-------------------------------------------------------------------------'.PHP_EOL;
+printf('-------------------------------------------------------------------------');
 
 var_dump(Yii::$app);
-echo '-------------------------------------------------------------------------'.PHP_EOL;
+printf('-------------------------------------------------------------------------');
 
-var_dump(new yii\components\Pay([
+var_dump(new Pay([
     'wechat' => 'This is Wechat.',
-    'alipay' => 'This is Alipay.',
 ]));
-echo '-------------------------------------------------------------------------'.PHP_EOL;
+printf('-------------------------------------------------------------------------');
