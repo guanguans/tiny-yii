@@ -68,6 +68,10 @@
         "ext-ctype": "*",
         "lib-pcre": "*"
     },
+    "require-dev": {
+        "symfony/var-dumper": "^5.0",
+        "friendsofphp/php-cs-fixer": "~2.2"
+    },
     "autoload": {
         "psr-4": {"yii\\": ""}
     },
