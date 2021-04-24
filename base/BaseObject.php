@@ -7,8 +7,6 @@
 
 namespace yii\base;
 
-use Yii;
-
 /**
  * BaseObject is the base class that implements the *property* feature.
  *
